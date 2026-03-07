@@ -1,0 +1,97 @@
+.home-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #9ff7f3 0%, #e9ffff 100%);
+  padding: 40px 24px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.home-content {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.home-text {
+  flex: 1;
+}
+
+.home-text h1 {
+  margin: 0 0 12px 0;
+  color: #053f3d;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.home-text h3 {
+  margin: 0 0 18px 0;
+  color: #00bdb3;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.home-text p {
+  color: #555;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.explore-btn {
+  background: linear-gradient(90deg, #00bdb3, #06a39a);
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 28px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 189, 179, 0.2);
+}
+
+.explore-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 189, 179, 0.3);
+}
+
+.explore-btn:active {
+  transform: translateY(0);
+}
+
+.home-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.home-image img {
+  max-width: 100%;
+  width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .home-content {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .home-text h1 {
+    font-size: 28px;
+  }
+
+  .home-text h3 {
+    font-size: 18px;
+  }
+
+  .home-image img {
+    width: 300px;
+  }
+}

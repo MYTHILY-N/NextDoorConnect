@@ -1,0 +1,197 @@
+/* Feedback.css */
+.feedback-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0f7fa 0%, #ffffff 100%); /* Softer gradient */
+  padding: 40px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.feedback-content {
+  width: 100%;
+  max-width: 600px;
+  background: white;
+  border-radius: 16px;
+  padding: 48px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.feedback-content h2 {
+  color: #006064; /* Darker teal for better contrast */
+  font-size: 32px;
+  margin-bottom: 12px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.feedback-subtitle {
+  text-align: center;
+  color: #546e7a;
+  margin-bottom: 40px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Form Groups */
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.form-group label {
+  color: #37474f;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.feedback-form input,
+.feedback-form textarea {
+  padding: 14px 16px;
+  border: 2px solid #eceff1;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #263238;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.feedback-form input:focus,
+.feedback-form textarea:focus {
+  outline: none;
+  border-color: #00bcd4;
+  background-color: white;
+  box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
+}
+
+.feedback-form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* Error States */
+.error-input {
+  border-color: #ff5252 !important;
+  background-color: #ffebee !important;
+}
+
+.error-text {
+  color: #ff5252;
+  font-size: 12px;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* Star Rating */
+.star-rating {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #cfd8dc; /* Gray for inactive */
+  transition: transform 0.2s, color 0.2s;
+}
+
+.star-btn svg {
+  width: 32px;
+  height: 32px;
+}
+
+.star-btn:hover {
+  transform: scale(1.2);
+}
+
+.star-btn.active {
+  color: #ffc107; /* Amber for active */
+  filter: drop-shadow(0 2px 4px rgba(255, 193, 7, 0.3));
+}
+
+/* Submit Button */
+.submit-btn {
+  background: linear-gradient(90deg, #00bcd4, #0097a7);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 188, 212, 0.4);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+/* Success Message */
+.success-message {
+  text-align: center;
+  padding: 40px 0;
+  animation: fadeIn 0.5s ease;
+}
+
+.success-message svg {
+  color: #00c853;
+  margin-bottom: 24px;
+}
+
+.success-message h3 {
+  color: #2e7d32;
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.success-message p {
+  color: #607d8b;
+  margin-bottom: 32px;
+}
+
+.success-message button {
+  background: transparent;
+  border: 2px solid #00bcd4;
+  color: #00bcd4;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.success-message button:hover {
+  background: #e0f7fa;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .feedback-content {
+    padding: 32px 24px;
+  }
+}

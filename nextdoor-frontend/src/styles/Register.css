@@ -1,0 +1,216 @@
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.register-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #9ff7f3, #e9ffff);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 60px;
+}
+
+.register-form {
+  background: white;
+  padding: 40px 40px;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.register-container h1 {
+  position: relative;
+  top: auto;
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 24px;
+  color: #333;
+}
+
+.register-form input,
+.register-form textarea {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.role-section {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 30px;
+  padding: 15px 0;
+}
+
+.role-section label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  flex: 1;
+  justify-content: center;
+}
+
+.role-section input[type="radio"] {
+  margin: 0;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.upload-section {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.upload-label {
+  font-size: 14px;
+  display: inline-block;
+  margin-bottom: 5px;
+  cursor: pointer;
+  position: relative;
+}
+
+/* TOOLTIP */
+.tooltip {
+  visibility: hidden;
+  background: #333;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  position: absolute;
+  left: 0;
+  top: -35px;
+  white-space: nowrap;
+}
+
+.upload-label:hover .tooltip {
+  visibility: visible;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  background: #00bdb3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  background: #009c94;
+  box-shadow: 0 4px 12px rgba(0, 189, 179, 0.4);
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+}
+
+/* THANK YOU BOX */
+.thank-you-box {
+  background: white;
+  padding: 60px 50px;
+  border-radius: 12px;
+  width: 450px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #00bdb3;
+  color: white;
+  font-size: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 25px;
+  font-weight: bold;
+}
+
+.thank-you-box h2 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 15px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.thank-you-box p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.verification-message {
+  font-size: 18px;
+  color: #00bdb3;
+  font-weight: 600;
+  margin: 20px 0 15px;
+}
+
+.verification-info {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 30px;
+}
+
+.back-btn {
+  padding: 12px 40px;
+  border-radius: 25px;
+  border: none;
+  background: #00bdb3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #009c94;
+  box-shadow: 0 4px 12px rgba(0, 189, 179, 0.4);
+  transform: translateY(-2px);
+}
+
+.back-btn:active {
+  transform: scale(0.98);
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.password-rules {
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.password-rules p {
+  color: #888;
+  margin: 2px 0;
+}
+
+.password-rules p.valid {
+  color: green;
+  font-weight: 600;
+}
