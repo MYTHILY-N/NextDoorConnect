@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../components/AdminNavbar";
 import API_BASE_URL, { BASE_URL } from "../api";
 import "../styles/AdminDashboard.css";
 
 function AdminDashboard() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -11,8 +13,13 @@ function AdminDashboard() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
+    const role = localStorage.getItem("role");
+    if (role !== "admin") {
+      navigate("/user/home");
+      return;
+    }
     fetchUsers();
-  }, []);
+  }, [navigate]);
 
   const fetchUsers = () => {
     fetch(`${API_BASE_URL}/admin/users`)

@@ -1,4 +1,5 @@
 import Complaint from "../models/Complaint.js";
+import { sendComplaintStatusEmail } from "../utils/emailService.js";
 
 export const createComplaint = async (req, res) => {
     try {
@@ -54,7 +55,7 @@ export const getAllComplaints = async (req, res) => {
 export const updateComplaintStatus = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, adminMessage } = req.body;
 
         const updatedComplaint = await Complaint.findByIdAndUpdate(
             id,
@@ -69,9 +70,26 @@ export const updateComplaintStatus = async (req, res) => {
             });
         }
 
+        // Send email for status updates (resolved or rejected)
+        if (status === "resolved" || status === "rejected") {
+            try {
+                await sendComplaintStatusEmail({
+                    userName: updatedComplaint.fullName,
+                    userEmail: updatedComplaint.email,
+                    complaintId: updatedComplaint._id.toString(),
+                    complaintTitle: updatedComplaint.description,
+                    complaintStatus: status,
+                    adminMessage: adminMessage || (status === "resolved" ? "Your complaint has been successfully resolved." : "Unfortunately, your complaint was rejected after review.")
+                });
+            } catch (emailError) {
+                console.error("Email notification failed:", emailError);
+                // We still return success for the status update even if email fails
+            }
+        }
+
         res.status(200).json({
             success: true,
-            message: "Complaint status updated successfully",
+            message: `Complaint status updated to ${status} successfully. Notification email triggered.`,
             complaint: updatedComplaint,
         });
     } catch (error) {

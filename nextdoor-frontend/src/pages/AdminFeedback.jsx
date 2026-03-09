@@ -1,15 +1,22 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../components/AdminNavbar";
 import API_BASE_URL from "../api";
 import "./AdminFeedback.css";
 
 function AdminFeedback() {
+    const navigate = useNavigate();
     const [feedbacks, setFeedbacks] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const role = localStorage.getItem("role");
+        if (role !== "admin") {
+            navigate("/user/home");
+            return;
+        }
         fetchFeedbacks();
-    }, []);
+    }, [navigate]);
 
     const fetchFeedbacks = async () => {
         try {

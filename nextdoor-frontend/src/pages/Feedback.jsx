@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../api";
 import "./Feedback.css";
@@ -6,7 +6,7 @@ import "./Feedback.css";
 function Feedback() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: localStorage.getItem("fullName") || "",
+    name: localStorage.getItem("fullName") || "User",
     contact: localStorage.getItem("email") || "",
     message: "",
   });

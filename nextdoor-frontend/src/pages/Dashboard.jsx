@@ -2,6 +2,7 @@ import { useState } from "react";
 import CategoryCard from "../components/CategoryCard";
 import ChatbotWidget from "../components/ChatbotWidget";
 import "./Dashboard.css";
+import "../components/NavBar.jsx"; // Import NavBar styles for consistent look
 
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");

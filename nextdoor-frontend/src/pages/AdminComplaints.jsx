@@ -1,16 +1,23 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../components/AdminNavbar";
 import API_BASE_URL from "../api";
 import "./AdminComplaints.css";
 
 function AdminComplaints() {
+    const navigate = useNavigate();
     const [complaints, setComplaints] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedComplaint, setSelectedComplaint] = useState(null);
 
     useEffect(() => {
+        const role = localStorage.getItem("role");
+        if (role !== "admin") {
+            navigate("/user/home");
+            return;
+        }
         fetchComplaints();
-    }, []);
+    }, [navigate]);
 
     const fetchComplaints = async () => {
         try {
@@ -34,6 +41,8 @@ function AdminComplaints() {
                 body: JSON.stringify({ status: newStatus }),
             });
             if (res.ok) {
+                const data = await res.json();
+                alert(data.message);
                 fetchComplaints();
             }
         } catch (error) {

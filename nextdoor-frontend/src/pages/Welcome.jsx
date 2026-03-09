@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 
 function Welcome() {
   const navigate = useNavigate();
-  const fullName = typeof window !== 'undefined' ? localStorage.getItem("fullName") : null;
 
   return (
     <div className="welcome-container">
@@ -20,7 +19,7 @@ function Welcome() {
 
         {/* LEFT SIDE CONTENT */}
         <div className="welcome-text">
-          <h1>{fullName ? `Welcome, ${fullName}!` : "Welcome to NextDoor Connect..."}</h1>
+          <h1>Welcome, User!</h1>
 
           <h3>
             A Community-oriented Digital Marketplace <br />
@@ -39,8 +38,8 @@ function Welcome() {
           </p>
 
           <button className="register-btn" onClick={() => navigate("/register")}>
-  Register
-</button>
+            Register
+          </button>
 
         </div>
 

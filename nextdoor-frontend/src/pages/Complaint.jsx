@@ -17,10 +17,9 @@ function Complaint() {
 
     // User details from localStorage
     const userId = localStorage.getItem("userId");
-    const fullName = localStorage.getItem("fullName") || "Anonymous";
+    const fullName = localStorage.getItem("fullName") || "User";
     const userEmail = localStorage.getItem("email") || "";
     const userPhone = localStorage.getItem("phone") || "";
-    const userRole = localStorage.getItem("role");
 
     // Redirect if not logged in
     useEffect(() => {

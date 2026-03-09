@@ -19,6 +19,8 @@ function Login() {
 
   const [unverified, setUnverified] = useState(false);
   const [unverifiedName, setUnverifiedName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,8 +30,11 @@ function Login() {
     e.preventDefault();
     setError({ field: "", message: "" });
     setUnverified(false);
+    setLoading(true);
 
     try {
+      console.log("🔐 Login attempt with:", formData);
+
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
@@ -42,19 +47,24 @@ function Login() {
       });
 
       const data = await res.json();
+      console.log("📩 Backend response:", data);
 
       // If user is not verified
       if (data.unverified) {
+        console.log("⏳ User not verified yet");
         setUnverified(true);
         setUnverifiedName(data.fullName);
+        setLoading(false);
         return;
       }
 
       if (!res.ok) {
+        console.warn("❌ Login failed:", data.message);
         setError({
           field: data.field,
           message: data.message,
         });
+        setLoading(false);
         return;
       }
 
@@ -64,22 +74,35 @@ function Login() {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("role", data.role);
         localStorage.setItem("userId", data.userId);
-        // store full name for navbar and welcome
         if (data.fullName) localStorage.setItem("fullName", data.fullName);
         if (data.email) localStorage.setItem("email", data.email);
         if (data.phone) localStorage.setItem("phone", data.phone);
 
-        // 🚀 navigate to role-based home/dashboard
-        if (data.role === "user" || data.role === "provider") navigate("/user/home");
-        if (data.role === "admin") navigate("/admin/dashboard");
+        setLoading(false);
 
+        // 🚀 navigate to role-based home/dashboard
+        if (data.role === "admin") {
+          navigate("/admin/dashboard");
+        } else {
+          // Send both 'user' and 'provider' to '/user/home'
+          navigate("/user/home");
+        }
+
+      } else {
+        setError({
+          field: "general",
+          message: data.message || "Invalid response from server",
+        });
+        setLoading(false);
       }
 
     } catch (err) {
+      console.error("❌ Fetch error:", err);
       setError({
         field: "general",
-        message: "Backend not responding",
+        message: "Backend not responding: " + err.message,
       });
+      setLoading(false);
     }
   };
 
@@ -134,6 +157,9 @@ function Login() {
       {/* Normal Login Form */}
       {!unverified && (
         <div className="login-card">
+          <div className="back-btn" onClick={() => navigate("/welcome")}>
+            ← Back to Welcome
+          </div>
           <h1 className="login-title">Welcome Back 👋</h1>
           <p className="login-subtitle">
             Login to continue connecting with your community
@@ -152,14 +178,32 @@ function Login() {
               <p className="error-text">{error.message}</p>
             )}
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="password-input-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <span
+                className="password-toggle-icon"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                )}
+              </span>
+            </div>
             {error.field === "password" && (
               <p className="error-text">{error.message}</p>
             )}
@@ -199,8 +243,8 @@ function Login() {
               </label>
             </div>
 
-            <button type="submit" className="login-btn-main">
-              Login
+            <button type="submit" className="login-btn-main" disabled={loading}>
+              {loading ? "Logging in..." : "Login"}
             </button>
 
             {error.field === "general" && (
