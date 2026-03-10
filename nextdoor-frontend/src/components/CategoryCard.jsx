@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 
-function CategoryCard({ title, description }) {
+function CategoryCard({ title, description, onClick }) {
   const navigate = useNavigate();
 
   return (
     <div
       className="category-card"
-      onClick={() => navigate("/services")}
+      onClick={onClick || (() => navigate("/services"))}
     >
       <div className="card-icon-placeholder">
         {/* Placeholder for icon based on title first letter */}

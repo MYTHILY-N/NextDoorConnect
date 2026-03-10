@@ -276,3 +276,57 @@
   color: green;
   font-weight: 600;
 }
+
+/* SERVICE PROVIDER FIELDS */
+.service-domain-select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #ffffff;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path fill='%2300bdb3' d='M10 13L5 8h10z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px;
+  padding-right: 40px;
+}
+
+.service-domain-select:hover {
+  border-color: #00bdb3;
+}
+
+.service-domain-select:focus {
+  outline: none;
+  border-color: #00bdb3;
+  box-shadow: 0 0 5px rgba(0, 189, 179, 0.3);
+}
+
+.service-domain-select option {
+  padding: 10px;
+  background-color: #ffffff;
+}
+
+.service-description {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  resize: vertical;
+}
+
+.service-description:hover {
+  border-color: #00bdb3;
+}
+
+.service-description:focus {
+  outline: none;
+  border-color: #00bdb3;
+  box-shadow: 0 0 5px rgba(0, 189, 179, 0.3);
+}

@@ -84,7 +84,7 @@ function Login() {
         if (data.role === "admin") {
           navigate("/admin/dashboard");
         } else {
-          // Send both 'user' and 'provider' to '/user/home'
+          // Both users and providers land on the same home page
           navigate("/user/home");
         }
 

@@ -45,7 +45,9 @@ function Navbar() {
                 <NavLink to="/user/home">Home</NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard">Dashboard</NavLink>
+                <NavLink to={role === "provider" ? "/provider/dashboard" : "/dashboard"}>
+                  Dashboard
+                </NavLink>
               </li>
               <li>
                 <NavLink to="/about">About</NavLink>

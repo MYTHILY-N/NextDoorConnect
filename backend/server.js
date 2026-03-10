@@ -7,6 +7,9 @@ import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
 import feedbackRoutes from "./routes/feedbackRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
 import path from "path";
 
 dotenv.config();
@@ -50,6 +53,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/complaints", complaintRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 app.get("/", (req, res) => {
   res.send("NextDoor Connect Backend Running");

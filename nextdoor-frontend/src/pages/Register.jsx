@@ -18,6 +18,8 @@ function Register() {
     password: "",
     phone: "",
     address: "",
+    serviceDomain: "",
+    serviceDescription: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -96,6 +98,14 @@ function Register() {
       newErrors.serviceDoc = "Service document is required";
     }
 
+    if (role === "provider" && !formData.serviceDomain) {
+      newErrors.serviceDomain = "Please select a service domain";
+    }
+
+    if (role === "provider" && !formData.serviceDescription.trim()) {
+      newErrors.serviceDescription = "Service description is required";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -115,6 +125,12 @@ function Register() {
       data.append("phone", formData.phone.trim());
       data.append("address", formData.address);
       data.append("role", role);
+
+      // Add provider-specific fields if applicable
+      if (role === "provider") {
+        data.append("serviceDomain", formData.serviceDomain);
+        data.append("serviceDescription", formData.serviceDescription);
+      }
 
       // files
       data.append("addressProof", files.addressProof);
@@ -262,6 +278,44 @@ function Register() {
           </label>
         </div>
         {errors.role && <span className="error">{errors.role}</span>}
+
+        {/* SERVICE DOMAIN - Conditional for Providers */}
+        {role === "provider" && (
+          <>
+            <select
+              name="serviceDomain"
+              value={formData.serviceDomain}
+              onChange={handleInputChange}
+              className="service-domain-select"
+            >
+              <option value="">Select Your Service Domain</option>
+              <option value="plumbing">🔧 Plumbing</option>
+              <option value="electrical">⚡ Electrical</option>
+              <option value="cleaning">🧹 Cleaning</option>
+              <option value="painting">🎨 Painting</option>
+              <option value="carpentry">🪵 Carpentry</option>
+              <option value="appliances">🔌 Appliances Repair</option>
+              <option value="gardening">🌿 Gardening</option>
+              <option value="beauty">💄 Beauty & Salon</option>
+              <option value="movings">📦 Moving Services</option>
+              <option value="pest_control">🪳 Pest Control</option>
+              <option value="it_support">💻 IT Support</option>
+              <option value="tutor">📚 Tutoring</option>
+              <option value="other">✨ Other</option>
+            </select>
+            {errors.serviceDomain && <span className="error">{errors.serviceDomain}</span>}
+
+            <textarea
+              name="serviceDescription"
+              placeholder="Describe your service in detail (e.g., experience, specializations, availability)"
+              value={formData.serviceDescription}
+              onChange={handleInputChange}
+              className="service-description"
+              rows="4"
+            />
+            {errors.serviceDescription && <span className="error">{errors.serviceDescription}</span>}
+          </>
+        )}
 
         {/* UPLOADS */}
         <div className="upload-section">

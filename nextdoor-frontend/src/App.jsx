@@ -34,8 +34,7 @@ function Layout() {
     "/admin/dashboard",
     "/admin/feedback",
     "/admin/complaints",
-    "/admin/about",
-    "/provider/dashboard"
+    "/admin/about"
   ];
 
   const showNavbar = !hideNavbarRoutes.includes(location.pathname);

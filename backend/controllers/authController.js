@@ -10,6 +10,8 @@ export const registerUser = async (req, res) => {
       password,
       address,
       role,
+      serviceDomain,
+      serviceDescription,
     } = req.body;
 
     console.log("📋 Registration Data Received:", {
@@ -20,6 +22,8 @@ export const registerUser = async (req, res) => {
       address,
       addressProof: req.files?.addressProof?.[0]?.filename,
       serviceDoc: req.files?.serviceDoc?.[0]?.filename,
+      serviceDomain: role === "provider" ? serviceDomain : "N/A",
+      serviceDescription: role === "provider" ? serviceDescription : "N/A",
     });
 
     // Validation
@@ -36,6 +40,16 @@ export const registerUser = async (req, res) => {
     if (role === "provider" && !req.files?.serviceDoc) {
       console.warn("⚠️ Service provider missing service document");
       return res.status(400).json({ message: "Service document is required for providers" });
+    }
+
+    if (role === "provider" && !serviceDomain) {
+      console.warn("⚠️ Service provider missing service domain");
+      return res.status(400).json({ message: "Service domain is required for providers" });
+    }
+
+    if (role === "provider" && !serviceDescription) {
+      console.warn("⚠️ Service provider missing service description");
+      return res.status(400).json({ message: "Service description is required for providers" });
     }
 
     // Check existing user
@@ -60,6 +74,14 @@ export const registerUser = async (req, res) => {
       serviceDoc:
         role === "provider"
           ? req.files.serviceDoc[0].path
+          : null,
+      serviceDomain:
+        role === "provider"
+          ? serviceDomain.toLowerCase()
+          : null,
+      serviceDescription:
+        role === "provider"
+          ? serviceDescription.trim()
           : null,
     });
 

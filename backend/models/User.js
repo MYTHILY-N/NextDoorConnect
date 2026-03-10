@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["user", "provider","admin"],
+      enum: ["user", "provider", "admin"],
       required: true,
     },
 
@@ -21,6 +21,31 @@ const userSchema = new mongoose.Schema(
 
     serviceDoc: {
       type: String, // optional
+    },
+
+    serviceDomain: {
+      type: String, // e.g., "plumbing", "electrical"
+      default: null,
+    },
+
+    serviceDescription: {
+      type: String, // detailed description of service
+      default: null,
+    },
+
+    hourlyRate: {
+      type: String, // e.g., "₹500/hr"
+      default: "N/A",
+    },
+
+    availableTime: {
+      type: String, // e.g., "9 AM - 6 PM"
+      default: "N/A",
+    },
+
+    rating: {
+      type: Number,
+      default: 5.0,
     },
 
     isVerified: {
