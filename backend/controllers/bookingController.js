@@ -82,3 +82,22 @@ export const updateBookingStatus = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
+
+export const getUserBookings = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const bookings = await Booking.find({ userId })
+            .populate("providerId", "fullName email phone")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            count: bookings.length,
+            bookings
+        });
+    } catch (error) {
+        console.error("❌ Get User Bookings Error:", error.message);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+

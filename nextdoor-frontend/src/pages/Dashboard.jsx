@@ -494,7 +494,12 @@ function Dashboard() {
       )}
 
       {/* Chatbot */}
-      <ChatbotWidget />
+      <ChatbotWidget onBookService={(serviceTitle) => {
+        const category = categories.find(c => c.title.toLowerCase().includes(serviceTitle.toLowerCase()));
+        if (category) {
+          handleCategoryClick(category);
+        }
+      }} />
     </div>
   );
 }

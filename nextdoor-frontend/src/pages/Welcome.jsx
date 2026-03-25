@@ -19,6 +19,7 @@ function Welcome() {
 
         {/* LEFT SIDE CONTENT */}
         <div className="welcome-text">
+          <h1 className="app-title">NextDoor Connect</h1>
           <h1>Welcome, User!</h1>
 
           <h3>

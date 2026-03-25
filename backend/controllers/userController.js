@@ -40,7 +40,13 @@ export const updateUserProfile = async (req, res) => {
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
         res.json({ success: true, user });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Server error" });
+        console.error("❌ Update Profile Error:", error.message);
+        if (error.name === "ValidationError") {
+            const messages = Object.values(error.errors).map(err => err.message);
+            res.status(400).json({ success: false, message: messages.join(", ") });
+        } else {
+            res.status(500).json({ success: false, message: error.message || "Server error" });
+        }
     }
 };
 

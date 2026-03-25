@@ -7,6 +7,8 @@ import About from "./pages/About";
 import Help from "./pages/Help";
 import Feedback from "./pages/Feedback";
 import Complaint from "./pages/Complaint";
+import MyBookingRequests from "./pages/MyBookingRequests";
+import Profile from "./pages/Profile";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -66,6 +68,8 @@ function Layout() {
         <Route path="/help" element={<Help />} />
         <Route path="/feedback" element={<Feedback />} />
         <Route path="/complaint" element={<Complaint />} />
+        <Route path="/my-booking-requests" element={<MyBookingRequests />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </>
   );

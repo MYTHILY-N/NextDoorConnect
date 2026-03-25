@@ -1,13 +1,27 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
 import "../styles/NavBar.css";
 
 function Navbar() {
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
   const fullName =
     typeof window !== "undefined" ? localStorage.getItem("fullName") : null;
 
   const role =
     typeof window !== "undefined" ? localStorage.getItem("role") : null;
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -65,7 +79,23 @@ function Navbar() {
 
       <div className="nav-right">
         <h2 className="nav-title">NextDoor Connect</h2>
-        <div className="profile-icon">👤</div>
+        {fullName && (
+          <div className="profile-container" ref={dropdownRef}>
+            <div 
+              className="profile-icon" 
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              👤
+            </div>
+            {dropdownOpen && (
+              <div className="profile-dropdown">
+                <NavLink to="/profile" onClick={() => setDropdownOpen(false)}>Profile</NavLink>
+                <NavLink to="/my-booking-requests" onClick={() => setDropdownOpen(false)}>My Booking Requests</NavLink>
+                <NavLink to="/my-orders" onClick={() => setDropdownOpen(false)}>My Orders</NavLink>
+              </div>
+            )}
+          </div>
+        )}
         <button className="logout-btn" onClick={handleLogout}>
           Logout
         </button>

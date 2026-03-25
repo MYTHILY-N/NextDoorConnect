@@ -10,12 +10,19 @@ import feedbackRoutes from "./routes/feedbackRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import chatbotRoutes from "./routes/chatbotRoutes.js";
 import path from "path";
 
 dotenv.config();
-connectDB();
 
 const app = express();
+
+// Start server after DB connection
+const startServer = async () => {
+  const connected = await connectDB();
+  if (!connected) {
+    console.warn("⚠️ Warning: Server started without database connection.")
+  }
 
 // CORS Configuration
 const corsOptions = {
@@ -56,12 +63,29 @@ app.use("/api/feedback", feedbackRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/chat", chatbotRoutes);
 
 app.get("/", (req, res) => {
   res.send("NextDoor Connect Backend Running");
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`🚀 Server running on port ${PORT}`)
-);
+app.get("/health", (req, res) => {
+  const isConnected = mongoose.connection.readyState === 1;
+  res.status(isConnected ? 200 : 503).json({
+    status: isConnected ? "✅ Healthy" : "⚠️ Database Not Connected",
+    database: isConnected ? "Connected" : "Disconnected",
+    server: "Running"
+  });
+});
+
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`Database: ${connected ? "✅ Connected" : "❌ Not Connected"}`);
+  });
+};
+
+startServer().catch(err => {
+  console.error("Failed to start server:", err);
+  process.exit(1);
+});

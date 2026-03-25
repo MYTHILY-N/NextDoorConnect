@@ -1,16 +1,18 @@
 import mongoose from "mongoose";
 
 const connectDB = async () => {
-  const maxRetries = 5;
+  const maxRetries = 3;
   let retries = 0;
   
   const connect = async () => {
     try {
       await mongoose.connect(process.env.MONGO_URI, {
-        serverSelectionTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 15000,
         socketTimeoutMS: 45000,
+        connectTimeoutMS: 15000,
         retryWrites: true,
         writeConcern: { w: "majority" },
+        maxPoolSize: 10,
       });
       console.log("✅ MongoDB Atlas Connected Successfully");
       return true;
@@ -19,8 +21,8 @@ const connectDB = async () => {
       console.error(`❌ MongoDB connection failed (Attempt ${retries}/${maxRetries}):`, error.message);
       
       if (retries < maxRetries) {
-        console.log(`⏳ Retrying in 3 seconds...`);
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        console.log(`⏳ Retrying in 5 seconds...`);
+        await new Promise(resolve => setTimeout(resolve, 5000));
         return connect();
       } else {
         console.error("--------------------------------------------------");

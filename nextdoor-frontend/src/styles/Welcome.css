@@ -1,3 +1,4 @@
+/* RESET */
 * {
   margin: 0;
   padding: 0;
@@ -12,121 +13,130 @@
   background: linear-gradient(135deg, #9ff7f3, #e9ffff);
   padding: 40px 60px;
   position: relative;
+  overflow: hidden;
+}
+
+/* APP TITLE (MAIN BRAND) */
+.app-title {
+  font-size: 58px;
+  font-weight: 900;
+  margin-bottom: 5px;
+  letter-spacing: 1px;
+
+  background: linear-gradient(90deg,#098078, #00bdb3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* LOGIN BUTTON */
 .login-btn {
   position: absolute;
-  top: 30px;
-  right: 130px;
-  padding: 8px 18px;
-  border-radius: 20px;
+  top: 7%;
+  right: 80px;
+  padding: 8px 20px;
+  margin-right: 5%;
+  border-radius: 25px;
   border: none;
   background: #ffffff;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  margin: 20px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
   transition: all 0.3s ease;
+  
 }
 
 .login-btn:hover {
   background: #00bdb3;
   color: white;
-  box-shadow: 0 4px 12px rgba(0, 189, 179, 0.4);
+  transform: translateY(-2px);
 }
 
 .login-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 2px 6px rgba(0, 189, 179, 0.6);
+  transform: scale(0.97);
 }
 
 /* MAIN CONTENT */
 .welcome-content {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 100%;
   gap: 40px;
 }
 
-
-/* LEFT TEXT */
+/* LEFT SIDE */
 .welcome-text {
   width: 55%;
-  margin-top: 40px;
+  margin-top: 20px;
+  margin-left: 40px;     /* space from left */
+  padding-left: 20px;    /* inner spacing */
 }
 
-.welcome-text h1 {
- font-family:Verdana, Geneva, Tahoma, sans-serif;
+/* WELCOME HEADING */
+.welcome-text h1:not(.app-title) {
   font-size: 34px;
-  margin-bottom: 15px;
-  padding: 20px;
-  padding-bottom: 0px;
+  margin-bottom: 10px;
+  color: #1b3a4b;
 }
 
+/* TAGLINE */
 .welcome-text h3 {
-
   font-size: 20px;
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
   font-weight: 600;
-  margin-bottom: 20px;
-  max-width: 700px;
-  padding: 20px;
-  padding-top: 0px;
-  }
+  margin-bottom: 15px;
+  max-width: 650px;
+  color: #2f4f4f;
+}
 
+/* DESCRIPTION */
 .welcome-text p {
-  font-size: 18px;
-  line-height: 1.6;
+  font-size: 16px;
+  line-height: 1.7;
   margin-bottom: 25px;
-  max-width: 700px;
+  max-width: 650px;
   text-align: justify;
-  padding: 20px;
-   padding-top: 0px;
-
+  color: #2c3e50;
 }
 
 /* REGISTER BUTTON */
 .register-btn {
-  padding: 10px 30px;
-  margin: 10px;
-  border-radius: 25px;
+  padding: 12px 32px;
+  border-radius: 30px;
   border: none;
-  background: #00bdb3;
+  background: linear-gradient(90deg, #00bdb3, #0096c7);
   color: white;
   font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
 }
 
 .register-btn:hover {
-  background: white;
-  color: #00bdb3;
-  box-shadow: 0 6px 15px rgba(0, 189, 179, 0.3);
+  transform: translateY(-3px);
+  background: linear-gradient(90deg, #0096c7, #00bdb3);
 }
 
 .register-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 2px 8px rgba(0, 189, 179, 0.5);
+  transform: scale(0.97);
 }
 
-/* RIGHT IMAGE */
+/* RIGHT SIDE IMAGE */
 .welcome-image {
-  width: 45%;
+ width: 45%;
   display: flex;
-  justify-content: center;
+  justify-content: center; /* 👈 push image to right edge */
   align-items: center;
-  padding: 20px;
 }
 
 .welcome-image img {
-  width: 450px;
-  height: 450px;
+  width: 420px;
+  height: 420px;
   border-radius: 20px;
   object-fit: cover;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .welcome-image img:hover {
