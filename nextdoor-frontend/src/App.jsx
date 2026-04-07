@@ -9,6 +9,10 @@ import Feedback from "./pages/Feedback";
 import Complaint from "./pages/Complaint";
 import MyBookingRequests from "./pages/MyBookingRequests";
 import Profile from "./pages/Profile";
+import Products from "./pages/Products";
+import PostAd from "./pages/PostAd";
+import ProductDetail from "./pages/ProductDetail";
+import Checkout from "./pages/Checkout";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -70,6 +74,10 @@ function Layout() {
         <Route path="/complaint" element={<Complaint />} />
         <Route path="/my-booking-requests" element={<MyBookingRequests />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
+        <Route path="/post-ad" element={<PostAd />} />
+        <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </>
   );

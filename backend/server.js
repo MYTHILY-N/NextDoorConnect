@@ -11,7 +11,9 @@ import userRoutes from "./routes/userRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import chatbotRoutes from "./routes/chatbotRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
@@ -40,7 +42,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use("/uploads", express.static("uploads"));
+// Serve uploaded files — resolves to backend/uploads/
+const __dirname_server = path.dirname(fileURLToPath(import.meta.url));
+app.use("/uploads", express.static(path.join(__dirname_server, "uploads")));
 
 // Middleware to check Database connection status
 app.use((req, res, next) => {
@@ -64,6 +68,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/chat", chatbotRoutes);
+app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => {
   res.send("NextDoor Connect Backend Running");

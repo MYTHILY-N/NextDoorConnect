@@ -44,6 +44,9 @@ function Navbar() {
                 <NavLink to="/admin/dashboard">Dashboard</NavLink>
               </li>
               <li>
+                <NavLink to="/products">Product</NavLink>
+              </li>
+              <li>
                 <NavLink to="/admin/feedback">Feedback</NavLink>
               </li>
               <li>
@@ -62,6 +65,9 @@ function Navbar() {
                 <NavLink to={role === "provider" ? "/provider/dashboard" : "/dashboard"}>
                   Dashboard
                 </NavLink>
+              </li>
+              <li>
+                <NavLink to="/products">Product</NavLink>
               </li>
               <li>
                 <NavLink to="/about">About</NavLink>
