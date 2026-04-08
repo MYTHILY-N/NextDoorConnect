@@ -1,5 +1,5 @@
 import Complaint from "../models/Complaint.js";
-import { sendComplaintStatusEmail } from "../utils/emailService.js";
+import { sendComplaintStatusEmail } from "../services/mailService.js";
 
 export const createComplaint = async (req, res) => {
     try {
@@ -73,17 +73,9 @@ export const updateComplaintStatus = async (req, res) => {
         // Send email for status updates (resolved or rejected)
         if (status === "resolved" || status === "rejected") {
             try {
-                await sendComplaintStatusEmail({
-                    userName: updatedComplaint.fullName,
-                    userEmail: updatedComplaint.email,
-                    complaintId: updatedComplaint._id.toString(),
-                    complaintTitle: updatedComplaint.description,
-                    complaintStatus: status,
-                    adminMessage: adminMessage || (status === "resolved" ? "Your complaint has been successfully resolved." : "Unfortunately, your complaint was rejected after review.")
-                });
+                await sendComplaintStatusEmail(updatedComplaint, status);
             } catch (emailError) {
                 console.error("Email notification failed:", emailError);
-                // We still return success for the status update even if email fails
             }
         }
 

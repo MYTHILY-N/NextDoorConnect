@@ -73,6 +73,7 @@ function PostAd() {
   const [description, setDescription] = useState("");
 
   // Step 3 state
+  const [adType, setAdType] = useState("sell"); // "sell" or "rent"
   const [price, setPrice] = useState("");
   const [images, setImages] = useState([]);   // preview blob URLs
   const [imageFiles, setImageFiles] = useState([]);  // actual File objects
@@ -110,6 +111,7 @@ function PostAd() {
     formData.append("category", selectedCategory?.name || "");
     formData.append("subcategory", selectedSubcategory || "");
     formData.append("brand", brand || "Other");
+    formData.append("type", adType);
     formData.append("location", state);
     formData.append("isFeatured", "false");
     formData.append("sellerName", name);
@@ -281,9 +283,35 @@ function PostAd() {
         {/* ───── STEP 3: Price + Photos ───── */}
         {step === 3 && (
           <div className="step-card animate-step">
-            <h2 className="step-subtitle">Set a Price</h2>
+            <h2 className="step-subtitle">Do you want to sell or rent?</h2>
+            <div className="form-group mb-24">
+              <div className="type-selector-row">
+                <label className={`type-radio ${adType === "sell" ? "selected" : ""}`}>
+                  <input 
+                    type="radio" 
+                    name="adType" 
+                    value="sell" 
+                    checked={adType === "sell"} 
+                    onChange={() => setAdType("sell")} 
+                  />
+                  <span>Sell</span>
+                </label>
+                <label className={`type-radio ${adType === "rent" ? "selected" : ""}`}>
+                  <input 
+                    type="radio" 
+                    name="adType" 
+                    value="rent" 
+                    checked={adType === "rent"} 
+                    onChange={() => setAdType("rent")} 
+                  />
+                  <span>Rent</span>
+                </label>
+              </div>
+            </div>
+
+            <h2 className="step-subtitle">{adType === "sell" ? "Set a Price" : "Set Rental Price per Day"}</h2>
             <div className="form-group">
-              <label className="form-label">Price <span className="required">*</span></label>
+              <label className="form-label">{adType === "sell" ? "Price" : "Rent per Day"} <span className="required">*</span></label>
               <div className="price-input-wrapper">
                 <span className="price-symbol">₹</span>
                 <input

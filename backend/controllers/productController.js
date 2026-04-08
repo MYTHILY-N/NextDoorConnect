@@ -64,20 +64,20 @@ export const getProducts = async (req, res) => {
 // Create a new product (handles image upload)
 export const createProduct = async (req, res) => {
   try {
-    const { title, description, price, category, subcategory, brand, location, isFeatured, sellerName, sellerPhone, sellerId } = req.body;
-
-    let imageUrl = null;
-    if (req.file) {
-      imageUrl = `${req.protocol}://${req.get("host")}/uploads/products/${req.file.filename}`;
-    }
-
-    const productData = {
-      title, description, price: Number(price), category, subcategory, brand,
-      location, isFeatured: isFeatured === "true" || isFeatured === true,
-      sellerName, sellerPhone,
-      ...(imageUrl && { image: imageUrl }),
-      ...(sellerId && { sellerId }),
-    };
+    const { title, description, price, category, subcategory, brand, type, location, isFeatured, sellerName, sellerPhone, sellerId } = req.body;
+ 
+     let imageUrl = null;
+     if (req.file) {
+       imageUrl = `${req.protocol}://${req.get("host")}/uploads/products/${req.file.filename}`;
+     }
+ 
+     const productData = {
+       title, description, price: Number(price), category, subcategory, brand, type,
+       location, isFeatured: isFeatured === "true" || isFeatured === true,
+       sellerName, sellerPhone,
+       ...(imageUrl && { image: imageUrl }),
+       ...(sellerId && { sellerId }),
+     };
 
     const newProduct = await Product.create(productData);
     res.status(201).json({ success: true, product: newProduct });
@@ -94,5 +94,16 @@ export const getProductById = async (req, res) => {
     res.status(200).json({ success: true, product });
   } catch (error) {
     res.status(500).json({ success: false, message: "Error fetching product", error: error.message });
+  }
+};
+
+// Get products sold by a specific seller
+export const getSoldProducts = async (req, res) => {
+  try {
+    const { sellerId } = req.params;
+    const products = await Product.find({ sellerId, status: "sold" }).sort({ updatedAt: -1 });
+    res.status(200).json({ success: true, count: products.length, products });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error fetching sold products", error: error.message });
   }
 };

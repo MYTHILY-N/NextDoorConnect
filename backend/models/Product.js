@@ -55,6 +55,20 @@ const ProductSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    status: {
+      type: String,
+      enum: ["available", "sold", "rented"],
+      default: "available",
+    },
+    rentedUntil: {
+      type: Date,
+      default: null,
+    },
+    type: {
+      type: String,
+      enum: ["sell", "rent"],
+      default: "sell",
+    },
   },
   { timestamps: true }
 );

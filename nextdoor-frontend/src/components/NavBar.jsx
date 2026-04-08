@@ -96,8 +96,11 @@ function Navbar() {
             {dropdownOpen && (
               <div className="profile-dropdown">
                 <NavLink to="/profile" onClick={() => setDropdownOpen(false)}>Profile</NavLink>
+                <NavLink to="/favorites" onClick={() => setDropdownOpen(false)}>My Favorites</NavLink>
+                <NavLink to="/cart" onClick={() => setDropdownOpen(false)}>My Cart</NavLink>
                 <NavLink to="/my-booking-requests" onClick={() => setDropdownOpen(false)}>My Booking Requests</NavLink>
-                <NavLink to="/my-orders" onClick={() => setDropdownOpen(false)}>My Orders</NavLink>
+                <NavLink to="/order-history" onClick={() => setDropdownOpen(false)}>My Orders</NavLink>
+                <NavLink to="/sold-items" onClick={() => setDropdownOpen(false)}>Sold Items History</NavLink>
               </div>
             )}
           </div>

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CategoryCard from "../components/CategoryCard";
 import ChatbotWidget from "../components/ChatbotWidget";
-import API_BASE_URL from "../api";
+import API_BASE_URL, { BASE_URL } from "../api";
 import "../styles/Dashboard.css";
 
 function Dashboard() {
@@ -23,6 +23,20 @@ function Dashboard() {
   const [bookingDescription, setBookingDescription] = useState("");
   const [isEmergency, setIsEmergency] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [bookingAmount, setBookingAmount] = useState(""); // User entered amount
+  const [isRazorpayLoaded, setIsRazorpayLoaded] = useState(false);
+
+  // Load Razorpay Script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => setIsRazorpayLoaded(true);
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const categories = [
     { title: "🔧 Plumbing", description: "Fix leaks, pipes, and drains", slug: "plumbing" },
@@ -130,42 +144,107 @@ function Dashboard() {
       return;
     }
 
+    if (paymentMethod === 'online' && (!bookingAmount || Number(bookingAmount) <= 0)) {
+      alert("Please enter a valid payment amount");
+      return;
+    }
+
     const userId = localStorage.getItem("userId");
     const userName = localStorage.getItem("fullName");
-    const userPhone = localStorage.getItem("phone");
 
-    const bookingData = {
-      userId,
-      providerId: selectedProvider._id,
-      userName,
-      userPhone: bookingPhone,
-      userAddress: bookingAddress,
-      serviceCategory: selectedCategory.title,
-      description: bookingDescription || "Service requested from dashboard",
-      isEmergency,
-      paymentMethod,
-      paidOnline: paymentMethod === 'online'
+    const finalizeBooking = async (paidOnline = false) => {
+      const bookingData = {
+        userId,
+        providerId: selectedProvider._id,
+        userName,
+        userPhone: bookingPhone,
+        userAddress: bookingAddress,
+        serviceCategory: selectedCategory.title,
+        description: bookingDescription || "Service requested from dashboard",
+        isEmergency,
+        paymentMethod,
+        paidOnline
+      };
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/bookings`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bookingData)
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          setBookingStep('success');
+        } else {
+          alert("Booking failed: " + data.message);
+        }
+      } catch (error) {
+        alert("Error creating booking. Please contact support.");
+      }
     };
 
-    try {
-      if (paymentMethod === 'online') {
-        alert("Redirecting to Razorpay... (Simulated)");
+    if (paymentMethod === 'online') {
+      if (!isRazorpayLoaded) {
+        alert("Razorpay is still loading. Please wait a moment.");
+        return;
       }
 
-      const res = await fetch(`${API_BASE_URL}/bookings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bookingData)
-      });
+      try {
+        // 1. Create order on backend (BASE_URL points to backend root)
+        const orderRes = await fetch(`${BASE_URL}/order`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: Number(bookingAmount) * 100, // into paise
+            currency: "INR",
+          }),
+        });
+        const orderData = await orderRes.json();
+        console.log("Order created:", orderData);
 
-      const data = await res.json();
-      if (data.success) {
-        setBookingStep('success');
-      } else {
-        alert("Booking failed: " + data.message);
+        // 2. Open Razorpay Modal
+        const options = {
+          key: "rzp_test_SaZdBgU1PovX2R", // Use the test key from .env
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: "NextDoor Connect",
+          description: `Booking with ${selectedProvider.fullName}`,
+          order_id: orderData.id,
+          handler: async (response) => {
+            console.log("Razorpay response:", response);
+            // 3. Validate payment
+            const validateRes = await fetch(`${BASE_URL}/order/validate`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(response),
+            });
+            const validateData = await validateRes.json();
+
+            if (validateData.msg === "success") {
+              finalizeBooking(true);
+            } else {
+              alert("Payment validation failed. Please try again.");
+            }
+          },
+          prefill: {
+            name: userName,
+            contact: bookingPhone,
+          },
+          theme: {
+            color: "#00bdb3",
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } catch (error) {
+        console.error("Payment error:", error);
+        alert("Error initializing payment gateway.");
       }
-    } catch (error) {
-      alert("Error processing booking. Please try again.");
+    } else {
+      // Cash on Delivery
+      finalizeBooking(false);
     }
   };
 
@@ -467,6 +546,20 @@ function Dashboard() {
                       <p>Pay securely via Razorpay</p>
                     </div>
                   </div>
+
+                  {paymentMethod === 'online' && (
+                    <div className="amount-input-section animate-fade-in">
+                      <label>Enter Amount to Pay (₹)</label>
+                      <input
+                        type="number"
+                        placeholder="e.g. 500"
+                        value={bookingAmount}
+                        onChange={(e) => setBookingAmount(e.target.value)}
+                        className="booking-amount-input"
+                      />
+                      <p className="helper-text">This will be processed in Test Mode.</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="details-actions">

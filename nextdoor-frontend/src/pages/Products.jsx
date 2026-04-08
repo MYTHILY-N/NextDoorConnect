@@ -95,8 +95,8 @@ function Products() {
         </div>
 
         <div className="toolbar-right">
-          <button className="icon-btn" title="Wishlist">❤️</button>
-          <button className="icon-btn" title="Cart">🛒</button>
+          <button className="icon-btn" onClick={()=>navigate("/favorites")} title="Wishlist">❤️</button>
+          <button className="icon-btn" onClick={()=>navigate("/cart")} title="Cart">🛒</button>
           <button className="sell-btn" onClick={() => navigate("/post-ad")}>➕ SELL</button>
         </div>
       </div>

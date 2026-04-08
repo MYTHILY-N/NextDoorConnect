@@ -13,6 +13,11 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "provider", "admin"],
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["pending", "verified", "rejected"],
+      default: "pending",
+    },
 
     addressProof: {
       type: String, // file path
@@ -52,6 +57,24 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false, // admin verification
     },
+    purchasedProducts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
+    cart: [
+      {
+        product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        quantity: { type: Number, default: 1 }
+      }
+    ],
+    favorites: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      }
+    ]
   },
   { timestamps: true }
 );

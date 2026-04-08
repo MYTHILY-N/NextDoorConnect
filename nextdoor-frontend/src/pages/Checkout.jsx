@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Checkout.css";
+import API_BASE_URL, { BASE_URL } from "../api";
 
 const STEPS = ["Delivery", "Payment", "Confirmation"];
 
@@ -15,6 +17,8 @@ function Checkout() {
   const [phone, setPhone] = useState(localStorage.getItem("phone") || "");
   const [address, setAddress] = useState("");
   const [pincode, setPincode] = useState("");
+  const [rentalStartDate, setRentalStartDate] = useState("");
+  const [rentalEndDate, setRentalEndDate] = useState("");
   const [step1Err, setStep1Err] = useState({});
 
   // Step 2 fields
@@ -23,6 +27,19 @@ function Checkout() {
 
   // Step 3 — order placed
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [isRazorpayLoaded, setIsRazorpayLoaded] = useState(false);
+
+  // Load Razorpay Script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => setIsRazorpayLoaded(true);
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   if (!product) {
     return (
@@ -40,14 +57,120 @@ function Checkout() {
     if (!phone.trim() || phone.length < 10) errs.phone = "Valid phone required";
     if (!address.trim()) errs.address = "Address is required";
     if (!pincode.trim() || pincode.length < 6) errs.pincode = "Valid 6-digit pincode required";
+    if (product.type === "rent") {
+      if (!rentalStartDate) errs.rentalStartDate = "Start date required";
+      if (!rentalEndDate) errs.rentalEndDate = "End date required";
+      if (rentalStartDate && rentalEndDate && new Date(rentalStartDate) > new Date(rentalEndDate)) {
+        errs.rentalEndDate = "End date must be after start date";
+      }
+    }
     setStep1Err(errs);
     return Object.keys(errs).length === 0;
   };
 
-  const handlePlaceOrder = () => {
-    localStorage.removeItem("buyNowProduct");
-    localStorage.removeItem("cart");
-    setOrderPlaced(true);
+  const handlePlaceOrder = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+
+      if (!userId) {
+        alert("Please login to place an order.");
+        navigate("/login");
+        return;
+      }
+
+      const finalizeOrder = async (paidOnline = false) => {
+        const orderData = {
+          userId,
+          productId: product._id,
+          amount: product.price,
+          paymentMethod: payMethod,
+          paidOnline,
+          deliveryDetails: {
+            fullName,
+            phone,
+            address,
+            pincode,
+          },
+          rentalStartDate,
+          rentalEndDate,
+          quantity: product.qty || 1
+        };
+
+        const res = await fetch(`${API_BASE_URL}/orders`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          localStorage.removeItem("buyNowProduct");
+          localStorage.removeItem("cart");
+          setOrderPlaced(true);
+        } else {
+          alert("Failed to place order: " + data.message);
+        }
+      };
+
+      if (payMethod === 'online') {
+        if (!isRazorpayLoaded) {
+          alert("Razorpay is still loading. Please wait...");
+          return;
+        }
+
+        // 1. Create order on backend
+        const orderRes = await fetch(`${BASE_URL}/order`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: (product.price * (product.qty || 1)) * 100, // into paise
+            currency: "INR",
+          }),
+        });
+        const orderData = await orderRes.json();
+
+        // 2. Open Razorpay Modal
+        const options = {
+          key: "rzp_test_SaZdBgU1PovX2R",
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: "NextDoor Connect",
+          description: `Buying ${product.title}`,
+          order_id: orderData.id,
+          handler: async (response) => {
+            // 3. Validate payment
+            const validateRes = await fetch(`${BASE_URL}/order/validate`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(response),
+            });
+            const validateData = await validateRes.json();
+
+            if (validateData.msg === "success") {
+              finalizeOrder(true);
+            } else {
+              alert("Payment validation failed.");
+            }
+          },
+          prefill: {
+            name: fullName,
+            contact: phone,
+          },
+          theme: {
+            color: "#00bdb3",
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } else {
+        // COD
+        finalizeOrder(false);
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("An error occurred while placing the order.");
+    }
   };
 
   const hasRealImg = product.image &&
@@ -81,13 +204,23 @@ function Checkout() {
             )}
             <div>
               <p className="co-prod-title">{product.title}</p>
-              <p className="co-prod-qty">Qty: {product.qty || 1}</p>
             </div>
           </div>
           <div className="co-summary-rows">
-            <div className="co-sum-row"><span>Item Price</span><span>₹ {product.price?.toLocaleString()}</span></div>
-            <div className="co-sum-row"><span>Qty</span><span>× {product.qty || 1}</span></div>
-            <div className="co-sum-row total"><span>Total</span><span>₹ {((product.price || 0) * (product.qty || 1)).toLocaleString()}</span></div>
+            <div className="co-sum-row">
+                <span>{product.type === "rent" ? "Rent per Day" : "Item Price"}</span>
+                <span>₹ {product.price?.toLocaleString()}</span>
+            </div>
+            {product.type === "rent" && (
+                <div className="co-sum-row">
+                    <span>Days</span>
+                    <span>× {product.qty || 1}</span>
+                </div>
+            )}
+            <div className="co-sum-row total">
+                <span>Total</span>
+                <span>₹ {(product.price * (product.qty || 1)).toLocaleString()}</span>
+            </div>
           </div>
         </div>
 
@@ -140,6 +273,41 @@ function Checkout() {
                     <input className={`co-input ${step1Err.pincode ? "err" : ""}`} value={pincode} onChange={e => setPincode(e.target.value)} placeholder="6-digit pincode" maxLength={6} />
                     {step1Err.pincode && <span className="co-err-msg">{step1Err.pincode}</span>}
                   </div>
+
+                  {product.type === "rent" && (
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 15 }}>
+                        <div className="co-form-group">
+                            <label>Rental Start Date *</label>
+                            <input 
+                              type="date" 
+                              className={`co-input ${step1Err.rentalStartDate ? "err" : ""}`} 
+                              value={rentalStartDate} 
+                              onChange={e => {
+                                const start = e.target.value;
+                                setRentalStartDate(start);
+                                if (start && product.qty) {
+                                  const end = new Date(start);
+                                  end.setDate(end.getDate() + parseInt(product.qty));
+                                  setRentalEndDate(end.toISOString().split('T')[0]);
+                                }
+                              }} 
+                              min={new Date().toISOString().split('T')[0]} 
+                            />
+                            {step1Err.rentalStartDate && <span className="co-err-msg">{step1Err.rentalStartDate}</span>}
+                        </div>
+                        <br></br>
+                        <div className="co-form-group">
+                            <label>Rental End Date (Auto)</label>
+                            <input 
+                              type="date" 
+                              className="co-input" 
+                              value={rentalEndDate} 
+                              readOnly 
+                              style={{ background: "#f5f5f5", cursor: "not-allowed" }}
+                            />
+                        </div>
+                    </div>
+                  )}
                   <button className="co-btn-primary" onClick={() => { if (validateStep1()) setStep(2); }}>Continue →</button>
                 </div>
               )}
@@ -165,7 +333,7 @@ function Checkout() {
                     </div>
                   </div>
 
-                  {payMethod === "online" && (
+                  {/* {payMethod === "online" && (
                     <div className="co-online-sub">
                       {[{ id: "upi", label: "🔵 UPI" }, { id: "card", label: "💳 Credit/Debit Card" }, { id: "netbanking", label: "🏦 Net Banking" }].map(opt => (
                         <div
@@ -177,11 +345,22 @@ function Checkout() {
                         </div>
                       ))}
                     </div>
-                  )}
+                  )} */}
 
                   <div className="co-action-row">
                     <button className="co-btn-secondary" onClick={() => setStep(1)}>← Back</button>
-                    <button className="co-btn-primary" onClick={() => setStep(3)}>Review Order →</button>
+                    <button 
+                      className="co-btn-primary" 
+                      onClick={() => {
+                        if (payMethod === "online") {
+                          handlePlaceOrder();
+                        } else {
+                          setStep(3);
+                        }
+                      }}
+                    >
+                      {payMethod === "online" ? "Proceed to Payment →" : "Review Order →"}
+                    </button>
                   </div>
                 </div>
               )}

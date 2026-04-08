@@ -13,6 +13,10 @@ import Products from "./pages/Products";
 import PostAd from "./pages/PostAd";
 import ProductDetail from "./pages/ProductDetail";
 import Checkout from "./pages/Checkout";
+import OrderHistory from "./pages/OrderHistory";
+import SoldItemsHistory from "./pages/SoldItemsHistory";
+import Cart from "./pages/Cart";
+import Favorites from "./pages/Favorites";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -78,6 +82,10 @@ function Layout() {
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/post-ad" element={<PostAd />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-history" element={<OrderHistory />} />
+        <Route path="/sold-items" element={<SoldItemsHistory />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/favorites" element={<Favorites />} />
       </Routes>
     </>
   );

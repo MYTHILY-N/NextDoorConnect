@@ -40,16 +40,27 @@ function ProductDetail() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const handleAddToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const existingIdx = cart.findIndex((item) => item._id === product._id);
-    if (existingIdx > -1) {
-      cart[existingIdx].qty = (cart[existingIdx].qty || 1) + quantity;
-    } else {
-      cart.push({ ...product, qty: quantity });
+  const handleAddToCart = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      alert("Please login to add items to cart");
+      navigate("/login");
+      return;
     }
-    localStorage.setItem("cart", JSON.stringify(cart));
-    showToast(`✅ "${product.title}" added to cart!`);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/users/${userId}/cart`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: product._id, quantity }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        navigate("/cart");
+      }
+    } catch (err) {
+      console.error("Cart Error:", err);
+    }
   };
 
   const handleBuyNow = () => {
@@ -146,9 +157,15 @@ function ProductDetail() {
 
           {/* Product Details */}
           <div className="pd-details-section">
-            <h1 className="pd-title">{product.title}</h1>
+            <h1 className="pd-title">
+              {product.title}
+              {product.type === "rent" && <span className="pd-rent-tag">For Rent</span>}
+            </h1>
             <div className="pd-price-row">
-              <span className="pd-price">₹ {product.price?.toLocaleString()}</span>
+              <h2 className="product-price">
+                ₹ {product.price?.toLocaleString()}
+                {product.type === "rent" && <span style={{fontSize: "0.9rem", fontWeight: 500, color: "#666"}}> / day</span>}
+              </h2>
               {product.isFeatured && <span className="pd-featured-tag">⭐ Featured</span>}
             </div>
 
@@ -157,6 +174,7 @@ function ProductDetail() {
               {product.subcategory && <div className="pd-info-row"><span className="pd-info-label">Category</span><span className="pd-info-val">{product.subcategory}</span></div>}
               {product.year && <div className="pd-info-row"><span className="pd-info-label">Year</span><span className="pd-info-val">{product.year}</span></div>}
               {product.usage && <div className="pd-info-row"><span className="pd-info-label">Usage</span><span className="pd-info-val">{product.usage}</span></div>}
+              <div className="pd-info-row"><span className="pd-info-label">Ad Type</span><span className="pd-info-val" style={{color: product.type === "rent" ? "#00bdb3" : "#002f34"}}>{product.type === "rent" ? "For Rent" : "For Sale"}</span></div>
               <div className="pd-info-row"><span className="pd-info-label">Location</span><span className="pd-info-val">📍 {product.location}</span></div>
             </div>
 
@@ -173,22 +191,48 @@ function ProductDetail() {
         <div className="pd-right">
           {/* Price Card (sticky) */}
           <div className="pd-right-card pd-price-card">
-            <div className="pd-price-big">₹ {product.price?.toLocaleString()}</div>
+            <div className="pd-price-big">
+                ₹ {product.price?.toLocaleString()}
+                {product.type === "rent" && <span style={{fontSize: "1.2rem", fontWeight: 500, color: "#666"}}> / day</span>}
+            </div>
             <div className="pd-location-tag">📍 {product.location}</div>
             <div className="pd-posted-on">Posted on {new Date(product.createdAt).toLocaleDateString()}</div>
-
-            {/* Quantity */}
-            <div className="pd-qty-row">
-              <span className="pd-qty-label">Qty</span>
-              <div className="pd-qty-control">
-                <button onClick={() => setQuantity(q => Math.max(1, q - 1))}>−</button>
-                <span>{quantity}</span>
-                <button onClick={() => setQuantity(q => q + 1)}>+</button>
+            
+            {product.status === "sold" || product.status === "rented" ? (
+              <div className="pd-sold-banner">
+                {product.status === "sold" ? "🚫 CURRENTLY NOT AVAILABLE / SOLD" : "🚫 CURRENTLY RENTED OUT"}
+                {product.rentedUntil && ` until ${new Date(product.rentedUntil).toLocaleDateString()}`}
               </div>
-            </div>
-
-            <button className="pd-btn-buy" onClick={handleBuyNow}>🛒 Buy Now</button>
-            <button className="pd-btn-cart" onClick={handleAddToCart}>♡ Add to Cart</button>
+            ) : (
+              <>
+                <div style={{ marginBottom: 20 }}>
+                  {product.type === "rent" ? (
+                    <>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                        <p className="pd-info-label" style={{ margin: 0 }}>Days to Rent:</p>
+                        <div className="pd-qty-control">
+                          <button
+                            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                            disabled={quantity <= 1}
+                          >-</button>
+                          <span>{quantity}</span>
+                          <button onClick={() => setQuantity((q) => q + 1)}>+</button>
+                        </div>
+                      </div>
+                      <p style={{ fontSize: "1rem", color: "#00bdb3", fontWeight: 700 }}>
+                        Total Rent: ₹ {(product.price * quantity).toLocaleString()}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="pd-info-label" style={{ margin: 0 }}>Quantity: 1</p>
+                  )}
+                </div>
+                <button className="pd-btn-buy" onClick={handleBuyNow} style={{ marginTop: 8 }}>
+                  {product.type === "rent" ? "🗓️ Rent Now" : "🛒 Buy Now"}
+                </button>
+                <button className="pd-btn-cart" onClick={handleAddToCart}>♡ Add to Cart</button>
+              </>
+            )}
           </div>
 
           {/* Seller Card */}

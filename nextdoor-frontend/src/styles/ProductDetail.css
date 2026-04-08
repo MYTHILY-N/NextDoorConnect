@@ -133,6 +133,13 @@
   color: #fff; padding: 4px 12px;
   border-radius: 20px; letter-spacing: 0.5px;
 }
+.pd-rent-tag {
+  font-size: 13px; font-weight: 700;
+  background: #fff; color: #00bdb3;
+  border: 1.5px solid #00bdb3;
+  padding: 3px 10px; border-radius: 12px;
+  margin-left: 12px; vertical-align: middle;
+}
 
 .pd-info-grid {
   display: flex;
@@ -268,6 +275,19 @@
   transition: all 0.25s;
 }
 .pd-btn-cart:hover { background: #e8fffe; }
+
+.pd-sold-banner {
+  width: 100%;
+  background: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-align: center;
+  border: 1px solid #f5c6cb;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
 
 /* Seller Card */
 .pd-seller-row {

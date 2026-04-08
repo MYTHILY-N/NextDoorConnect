@@ -71,3 +71,79 @@ export const deleteUserAccount = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error during account deletion" });
     }
 };
+
+// --- CART CONTROLERS ---
+export const getCart = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).populate("cart.product");
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+        res.json({ success: true, cart: user.cart });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+export const addToCart = async (req, res) => {
+    try {
+        const { id } = req.params; // userId
+        const { productId, quantity = 1 } = req.body;
+
+        const user = await User.findById(id);
+        const cartItemIdx = user.cart.findIndex(item => item.product.toString() === productId);
+
+        if (cartItemIdx > -1) {
+            user.cart[cartItemIdx].quantity += quantity;
+        } else {
+            user.cart.push({ product: productId, quantity });
+        }
+
+        await user.save();
+        res.json({ success: true, cart: user.cart });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const removeFromCart = async (req, res) => {
+    try {
+        const { id, productId } = req.params;
+        const user = await User.findById(id);
+        user.cart = user.cart.filter(item => item.product.toString() !== productId);
+        await user.save();
+        res.json({ success: true, cart: user.cart });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// --- FAVORITES CONTROLLERS ---
+export const getFavorites = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).populate("favorites");
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+        res.json({ success: true, favorites: user.favorites });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+export const toggleFavorite = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { productId } = req.body;
+
+        const user = await User.findById(id);
+        const favIdx = user.favorites.indexOf(productId);
+
+        if (favIdx > -1) {
+            user.favorites.splice(favIdx, 1);
+        } else {
+            user.favorites.push(productId);
+        }
+
+        await user.save();
+        res.json({ success: true, favorites: user.favorites });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
