@@ -1,6 +1,7 @@
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import User from "../models/User.js";
+import { sendSMS } from "../services/twilioService.js";
 
 // Place a new order
 export const placeOrder = async (req, res) => {
@@ -27,7 +28,40 @@ export const placeOrder = async (req, res) => {
      } else {
        updateData.status = "sold";
      }
-     await Product.findByIdAndUpdate(productId, updateData);
+      const updatedProduct = await Product.findByIdAndUpdate(productId, updateData, { new: true });
+
+      // 🔔 Send SMS to Seller
+      console.log(`[Order] Checking seller notification for product: ${productId}`);
+      try {
+        if (updatedProduct) {
+          let sellerPhone = updatedProduct.sellerPhone;
+          let sellerName = updatedProduct.sellerName;
+
+          // Fallback: If product doesn't have phone, fetch from User model
+          if (!sellerPhone && updatedProduct.sellerId) {
+            console.log(`[Order] sellerPhone missing on product. Fetching from User: ${updatedProduct.sellerId}`);
+            const sellerUser = await User.findById(updatedProduct.sellerId);
+            if (sellerUser) {
+              sellerPhone = sellerUser.phone;
+              sellerName = sellerUser.fullName;
+            }
+          }
+
+          console.log(`[Order] Seller Contact - Name: ${sellerName}, Phone: ${sellerPhone}`);
+
+          if (sellerPhone) {
+            const mode = rentalEndDate ? "RENTED" : "ORDERED (Sold)";
+            const sellerMsg = `Hello ${sellerName || 'Seller'}! Your product "${updatedProduct.title}" has been ${mode}. Check your NextDoor Connect dashboard for order details.`;
+            await sendSMS(sellerPhone, sellerMsg);
+          } else {
+            console.warn(`⚠️ [Order] No seller phone found via Product or User record for product ${productId}. SMS not sent.`);
+          }
+        } else {
+          console.error(`❌ [Order] Product ${productId} not found during status update.`);
+        }
+      } catch (smsError) {
+        console.error("⚠️ Order SMS to seller failed:", smsError.message);
+      }
 
     // 3. Add to user's purchased products history
     await User.findByIdAndUpdate(userId, {
