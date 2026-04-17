@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import NavBar from "./components/NavBar";
+import Footer from "./components/Footer";
 
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
@@ -87,6 +88,7 @@ function Layout() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/favorites" element={<Favorites />} />
       </Routes>
+      <Footer />
     </>
   );
 }
